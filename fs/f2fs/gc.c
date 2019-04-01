@@ -1927,11 +1927,12 @@ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
 		.ilist = LIST_HEAD_INIT(gc_list.ilist),
 		.iroot = RADIX_TREE_INIT(gc_list.iroot, GFP_NOFS),
 	};
+	struct super_block *sb = sbi->sb;
 	unsigned long long last_skipped = sbi->skipped_atomic_files[FG_GC];
 	unsigned long long first_skipped;
 	unsigned int skipped_round = 0, round = 0;
 
-	trace_f2fs_gc_begin(sbi->sb, sync, background,
+	trace_f2fs_gc_begin(sb, sync, background,
 				get_pages(sbi, F2FS_DIRTY_NODES),
 				get_pages(sbi, F2FS_DIRTY_DENTS),
 				get_pages(sbi, F2FS_DIRTY_IMETA),
@@ -1944,7 +1945,7 @@ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
 	sbi->skipped_gc_rwsem = 0;
 	first_skipped = last_skipped;
 gc_more:
-	if (unlikely(!(sbi->sb->s_flags & SB_ACTIVE))) {
+	if (unlikely(!(sb->s_flags & SB_ACTIVE))) {
 		ret = -EINVAL;
 		goto stop;
 	}
@@ -2045,6 +2046,13 @@ stop:
 
 	if (sync && !ret)
 		ret = sec_freed ? 0 : -EAGAIN;
+
+	if (gc_type == FG_GC && down_read_trylock(&sb->s_umount)) {
+		writeback_inodes_sb(sb, WB_REASON_SYNC);
+		sync_inodes_sb(sb);
+		up_read(&sb->s_umount);
+	}
+
 	return ret;
 }
 
