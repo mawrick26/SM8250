@@ -4295,7 +4295,7 @@ int smblib_get_prop_usb_voltage_now(struct smb_charger *chg,
 {
 	union power_supply_propval pval = {0, };
 	int rc, ret = 0;
-	u8 reg, adc_ch_reg;
+	u8 reg, adc_ch_reg = 0;
 
 #ifdef OP_SWARP_SUPPORTED
 	if (chg->swarp_supported && is_op_chg_available(chg)) {
@@ -5371,7 +5371,7 @@ static void op_reset_rd_work(struct work_struct *work)
 	struct smb_charger *chg = container_of(work, struct smb_charger,
 						reset_rd_work.work);
 	int rc;
-	u8 stat;
+	u8 stat = 0;
 
 	rc = smblib_masked_write(chg, TYPE_C_CC_CURRSRC_CONTROL_REG,
 			TYPE_C_CC_CURRSRC_CONTROL_MASK,
