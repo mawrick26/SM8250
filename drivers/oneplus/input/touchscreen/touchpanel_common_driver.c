@@ -719,7 +719,7 @@ static void tp_touch_handle(struct touchpanel_data *ts)
 		up_status = true;
 		ts->corner_delay_up = -1;
 		TPD_DETAIL("all touch up,view_area_touched=%d finger_num=%d\n",ts->view_area_touched, finger_num);
-		TPD_INFO("last point x:%d y:%d\n", last_point.x, last_point.y);
+		TPD_DEBUG("last point x:%d y:%d\n", last_point.x, last_point.y);
 		if (ts->edge_limit_support)
 			ts->edge_limit.in_which_area = AREA_NOTOUCH;
 	}
