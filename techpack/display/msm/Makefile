@@ -75,7 +75,6 @@ msm_drm-$(CONFIG_DEBUG_FS) += sde_dbg.o \
 msm_drm-$(CONFIG_DRM_SDE_WB) += sde/sde_wb.o \
 	sde/sde_encoder_phys_wb.o \
 
-
 msm_drm-$(CONFIG_DRM_SDE_RSC) += sde_rsc.o \
 	sde_rsc_hw.o \
 	sde_rsc_hw_v3.o \
@@ -102,7 +101,7 @@ msm_drm-$(CONFIG_DRM_MSM_DSI) += dsi/dsi_phy.o \
 	dsi/dsi_clk_manager.o \
 	dsi/dsi_display_test.o \
 
-#ifeq ($(CONFIG_PXLW_IRIS),y)
+ifeq ($(CONFIG_PXLW_IRIS),y)
 msm_drm-$(CONFIG_DRM_MSM_DSI) += dsi/iris/dsi_iris5_ioctl.o \
 				dsi/iris/dsi_iris5_lightup.o \
 				dsi/iris/dsi_iris5_lightup_ocp.o \
@@ -121,10 +120,9 @@ msm_drm-$(CONFIG_DRM_MSM_DSI) += dsi/iris/dsi_iris5_ioctl.o \
 				dsi/iris/msm_iris5_extended.o \
 				dsi/iris/sde_iris5_extended.o \
 				dsi/iris/dsi_iris5_extended.o
-$(warning "Defined CONFIG_PXLW_IRIS and PXLW_IRIS_DUAL in makefile")
 ccflags-y += -DCONFIG_PXLW_IRIS
 ccflags-y += -DPXLW_IRIS_DUAL
-#endif
+endif
 
 #ifeq ($(CONFIG_PXLW_SOFT_IRIS), y)
 #msm_drm-$(CONFIG_DRM_MSM_DSI) += dsi/iris/dsi_irissoft_ioctl.o

@@ -2826,7 +2826,7 @@ static void _sde_plane_map_prop_to_dirty_bits(void)
 	plane_prop_array[PLANE_PROP_ALPHA] =
 	plane_prop_array[PLANE_PROP_INPUT_FENCE] =
 	plane_prop_array[PLANE_PROP_BLEND_OP] =
-    plane_prop_array[PLANE_PROP_CUSTOM]= 0;
+    	plane_prop_array[PLANE_PROP_CUSTOM]= 0;
 
 	plane_prop_array[PLANE_PROP_FB_TRANSLATION_MODE] =
 		SDE_PLANE_DIRTY_FB_TRANSLATION_MODE;

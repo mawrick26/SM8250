@@ -2087,11 +2087,6 @@ int dsi_display_set_power(struct drm_connector *connector,
 	struct drm_panel_notifier notifier_data;
 	int blank;
 
-#ifdef CONFIG_F2FS_OF2FS
-	struct drm_panel_notifier notifier_data_f2fs;
-	int blank_f2fs;
-#endif
-
 	if (!display || !display->panel) {
 		DSI_ERR("invalid display/panel\n");
 		return -EINVAL;
@@ -2130,11 +2125,6 @@ int dsi_display_set_power(struct drm_connector *connector,
 		DSI_ERR("DRM_PANEL_BLANK_UNBLANK_CUST\n");
 		if (lcd_active_panel)
 			drm_panel_notifier_call_chain(lcd_active_panel, DRM_PANEL_EARLY_EVENT_BLANK, &notifier_data);
-#ifdef CONFIG_F2FS_OF2FS
-		blank_f2fs = DRM_PANEL_BLANK_UNBLANK_CUST;
-		notifier_data_f2fs.data = &blank_f2fs;
-		f2fs_panel_notifier_call_chain(DRM_PANEL_EARLY_EVENT_BLANK, &notifier_data_f2fs);
-#endif
 		/* send screen on cmd for tp end */
 		break;
 	case SDE_MODE_DPMS_OFF:
@@ -2144,11 +2134,6 @@ int dsi_display_set_power(struct drm_connector *connector,
 		DSI_ERR("DRM_PANEL_BLANK_POWERDOWN_CUST\n");
 		if (lcd_active_panel)
 			drm_panel_notifier_call_chain(lcd_active_panel, DRM_PANEL_EARLY_EVENT_BLANK, &notifier_data);
-#ifdef CONFIG_F2FS_OF2FS
-		blank_f2fs = DRM_PANEL_BLANK_POWERDOWN_CUST;
-		notifier_data_f2fs.data = &blank_f2fs;
-		f2fs_panel_notifier_call_chain(DRM_PANEL_EARLY_EVENT_BLANK, &notifier_data_f2fs);
-#endif
 		/* send screen off cmd for tp end */
 		break;
 	default:
@@ -4286,7 +4271,7 @@ static int dsi_display_clocks_init(struct dsi_display *display)
 			shadow->pixel_clk = dsi_clk;
 			continue;
 		}
-		
+
 		if (dsi_display_check_prefix(shadow_cphybyte, clk_name)) {
 			shadow_cphy->byte_clk = dsi_clk;
 			continue;
@@ -7559,7 +7544,7 @@ int dsi_display_get_modes(struct dsi_display *display,
 
 exit:
 	*out_modes = display->modes;
-    primary_display = display;
+    	primary_display = display;
 	rc = 0;
 
 error:
@@ -12014,7 +11999,7 @@ int dsi_display_unprepare(struct dsi_display *display)
 			       display->name, rc);
 	}
 
-		/* Remove additional vote added for pre_mode_switch_to_cmd */
+	/* Remove additional vote added for pre_mode_switch_to_cmd */
 	if (display->poms_pending &&
 			display->config.panel_mode == DSI_OP_VIDEO_MODE) {
 		display_for_each_ctrl(i, display) {
@@ -12111,4 +12096,3 @@ MODULE_PARM_DESC(dsi_display1,
 	"msm_drm.dsi_display1=<display node>:<configX> where <display node> is 'secondary dsi display node name' and <configX> where x represents index in the topology list");
 module_init(dsi_display_register);
 module_exit(dsi_display_unregister);
-
