@@ -1683,7 +1683,8 @@ QDF_STATUS dp_rx_desc_nbuf_sanity_check(hal_ring_desc_t ring_desc,
 
 	hal_rx_reo_buf_paddr_get(ring_desc, &hbi);
 	/* Sanity check for possible buffer paddr corruption */
-	if (dp_rx_desc_paddr_sanity_check(rx_desc, (&hbi)->paddr))
+	if ((&hbi)->paddr ==
+			  qdf_nbuf_get_frag_paddr(rx_desc->nbuf, 0))
 		return QDF_STATUS_SUCCESS;
 
 	return QDF_STATUS_E_FAILURE;
