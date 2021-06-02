@@ -348,7 +348,7 @@ const DOWNLOAD_TBL DTbl124[] = {
 unsigned char SelectDownload(UINT8 GyroSelect, UINT8 ActSelect, UINT8 MasterSlave, UINT8 FWType)
 {
 	DSPVER Dspcode;
-	DOWNLOAD_TBL *ptr;
+	DOWNLOAD_TBL *ptr = NULL;
     CAM_INFO(CAM_OIS, "GyroSelect:0x%x, ActSelect:0x%x, MasterSlave:0x%x, FWType:%d\n", GyroSelect, ActSelect, MasterSlave, FWType);
 
 	if ((MasterSlave == 0x00) || (MasterSlave == 0x02)) {		//20190522 Komori
@@ -372,7 +372,7 @@ unsigned char SelectDownload(UINT8 GyroSelect, UINT8 ActSelect, UINT8 MasterSlav
 
 	// 高速化対応Download
 TRACE("DataPM( %08x ), LengthPM( %08x ) , Parity( %08x ), DataDM( %08x ) , LengthDMA( %08x ) , LengthDMB( %08x ) \n"
-	, (int)ptr->DataPM , (int)ptr->LengthPM , (int)ptr->Parity , (int)ptr->DataDM , (int)ptr->LengthDMA , (int)ptr->LengthDMB );
+	, (int)(long)ptr->DataPM , (int)ptr->LengthPM , (int)ptr->Parity , (int)(long)ptr->DataDM , (int)ptr->LengthDMA , (int)ptr->LengthDMB );
 	return( DownloadToEP3( ptr->DataPM, ptr->LengthPM, ptr->Parity, ptr->DataDM, ptr->LengthDMA , ptr->LengthDMB ) ); 
 }
 
