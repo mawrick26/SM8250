@@ -1,0 +1,30 @@
+config PARAM_READ_WRITE
+	bool "Param partition read/write support"
+	default n
+	help
+		if you want to read/write the param partition in kernel,
+		then you must say Y here.
+
+config PROJECT_INFO
+    bool "detect project info"
+    default n
+    help
+      detect projcet info  If unsure, say n.
+
+config OEM_BOOT_MODE
+    bool "detect oem boot mode"
+    default n
+    help
+        detect oem boot mode  If unsure, say y.
+
+config GPIO_SWITCH
+	tristate "use gpio swith"
+	default y
+	help
+	  we can use gpio switch set gpio out high or low
+
+config REGULATOR_DEMO
+	tristate "use regultor demo"
+	default y
+	help
+	  we can use regulator demo to control regulator
