@@ -307,6 +307,7 @@
 				<1 590 0 150000>,
 				<1 590 0 300000>;
 		};
+
 		qcom,sde-limits {
 			qcom,sde-linewidth-limits {
 				qcom,sde-limit-name = "sspp_linewidth_usecases";
@@ -405,6 +406,8 @@
 		qcom,widebus-enable;
 		qcom,dsc-feature-enable;
 		qcom,fec-feature-enable;
+		qcom,max-dp-dsc-blks = <2>;
+		qcom,max-dp-dsc-input-width-pixs = <2048>;
 
 		qcom,ctrl-supply-entries {
 			#address-cells = <1>;

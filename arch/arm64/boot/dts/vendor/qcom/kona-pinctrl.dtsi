@@ -324,7 +324,6 @@
 			};
 		};
 
-
 		qupv3_se17_4uart_pins: qupv3_se17_4uart_pins {
 			qupv3_se17_ctsrx: qupv3_se17_ctsrx {
 				mux {
@@ -926,12 +925,12 @@
 		pmx_sde: pmx_sde {
 			sde_dsi_active: sde_dsi_active {
 				mux {
-					pins = "gpio75", "gpio60";
+					pins = "gpio75";
 					function = "gpio";
 				};
 
 				config {
-					pins = "gpio75", "gpio60";
+					pins = "gpio75";
 					drive-strength = <8>;   /* 8 mA */
 					bias-disable = <0>;   /* no pull */
 				};
@@ -939,12 +938,12 @@
 
 			sde_dsi_suspend: sde_dsi_suspend {
 				mux {
-					pins = "gpio75", "gpio60";
+					pins = "gpio75";
 					function = "gpio";
 				};
 
 				config {
-					pins = "gpio75", "gpio60";
+					pins = "gpio75";
 					drive-strength = <2>;   /* 2 mA */
 					bias-pull-down;         /* PULL DOWN */
 				};
@@ -3716,7 +3715,7 @@
 
 				config {
 					pins = "gpio12", "gpio13";
-					drive-strength = <2>;
+					drive-strength = <12>;
 					bias-disable;
 				};
 			};
