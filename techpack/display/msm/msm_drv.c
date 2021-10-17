@@ -47,6 +47,9 @@
 #include "msm_mmu.h"
 #include "sde_wb.h"
 #include "sde_dbg.h"
+#if defined(CONFIG_PXLW_IRIS) || defined(CONFIG_PXLW_SOFT_IRIS)
+#include "dsi/iris/dsi_iris5_api.h"
+#endif
 
 /*
  * MSM driver version:
@@ -985,7 +988,7 @@ static int msm_disable_all_modes(
 		struct drm_modeset_acquire_ctx *ctx)
 {
 	struct drm_atomic_state *state;
-	int ret, i;
+	int ret = 0, i;
 
 	state = drm_atomic_state_alloc(dev);
 	if (!state)
@@ -1655,6 +1658,10 @@ static const struct drm_ioctl_desc msm_ioctls[] = {
 	DRM_IOCTL_DEF_DRV(MSM_RMFB2, msm_ioctl_rmfb2, DRM_UNLOCKED),
 	DRM_IOCTL_DEF_DRV(MSM_POWER_CTRL, msm_ioctl_power_ctrl,
 			DRM_RENDER_ALLOW),
+#if defined(CONFIG_PXLW_IRIS) || defined(CONFIG_PXLW_SOFT_IRIS)
+	DRM_IOCTL_DEF_DRV(MSM_IRIS_OPERATE_CONF, msm_ioctl_iris_operate_conf, DRM_UNLOCKED|DRM_RENDER_ALLOW),
+	DRM_IOCTL_DEF_DRV(MSM_IRIS_OPERATE_TOOL, msm_ioctl_iris_operate_tool, DRM_UNLOCKED|DRM_RENDER_ALLOW),
+#endif
 };
 
 static const struct vm_operations_struct vm_ops = {
