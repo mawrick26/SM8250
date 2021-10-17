@@ -30,11 +30,8 @@
 #include "dsi-panel-samsung_dd305_fhd_dsc.dtsi"
 #include "dsi-panel-samsung_amb655x_fhd_dsc.dtsi"
 #include "dsi-panel-r66451-dsc-fhd-plus-144hz-cmd.dtsi"
-<<<<<<< HEAD
 #include "dsi-panel-arglass-seeya-dual-1080p-video.dtsi"
 #include "dsi-panel-nt36672e-fhd-plus-60hz-video.dtsi"
-=======
->>>>>>> c99ec2b13f95 (arm64: dts: Import Oneplus vendor)
 #include <dt-bindings/clock/mdss-7nm-pll-clk.h>
 
 /*&tlmm {
