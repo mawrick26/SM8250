@@ -3037,7 +3037,7 @@ int adm_open(int port_id, int path, int rate, int channel_mode, int topology,
 	int param_size;
 	int num_ec_ref_rx_chans = this_adm.num_ec_ref_rx_chans;
 
-	pr_info("%s:port %#x path:%d rate:%d mode:%d perf_mode:%d,topo_id %d app_type:%d acdb_id:%d\n",
+	pr_debug("%s:port %#x path:%d rate:%d mode:%d perf_mode:%d,topo_id %d app_type:%d acdb_id:%d\n",
 		 __func__, port_id, path, rate, channel_mode, perf_mode,
 		 topology, app_type, acdb_id);
 
