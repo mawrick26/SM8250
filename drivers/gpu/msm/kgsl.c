@@ -699,7 +699,8 @@ void kgsl_context_detach(struct kgsl_context *context)
 	/* Remove the event group from the list */
 	kgsl_del_event_group(&context->events);
 
-	kgsl_sync_timeline_detach(context->ktimeline);
+	kgsl_sync_timeline_put(context->ktimeline);
+
 	kgsl_context_put(context);
 }
 
@@ -717,8 +718,6 @@ kgsl_context_destroy(struct kref *kref)
 	 * may still be executing commands
 	 */
 	BUG_ON(!kgsl_context_detached(context));
-
-	kgsl_sync_timeline_put(context->ktimeline);
 
 	write_lock(&device->context_lock);
 	if (context->id != KGSL_CONTEXT_INVALID) {
@@ -743,6 +742,7 @@ kgsl_context_destroy(struct kref *kref)
 		context->id = KGSL_CONTEXT_INVALID;
 	}
 	write_unlock(&device->context_lock);
+	kgsl_sync_timeline_destroy(context);
 	kgsl_process_private_put(context->proc_priv);
 
 	device->ftbl->drawctxt_destroy(context);
