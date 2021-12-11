@@ -1634,15 +1634,12 @@ static int cnss_get_bdf_file_name(struct cnss_plat_data *plat_priv,
 	cnss_pr_dbg("cnss get_rf_version(): %d", rf_id);
 	switch (bdf_type) {
 	case CNSS_BDF_ELF:
-		/* WIFI MODIFICATION: */
-		//if (plat_priv->board_info.board_id == 0xFF)
-		//	snprintf(filename_tmp, filename_len, ELF_BDF_FILE_NAME);
+
 		if (plat_priv->board_info.board_id == 0xFF) {
 			cnss_get_filename(filename, filename_len, pj_id,
 					  hw_id, rf_id, tempstr);
 			return ret;
 		}
-		/* WIFI MODIFICATION: */
 		else if (plat_priv->board_info.board_id < 0xFF)
 			snprintf(filename_tmp, filename_len,
 				 ELF_BDF_FILE_NAME_PREFIX "%02x",
