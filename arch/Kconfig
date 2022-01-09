@@ -1024,7 +1024,7 @@ config ARCH_HAS_RELR
 	bool
 
 config RELR
-	bool "Use RELR relocation packing"
+	bool
 	depends on ARCH_HAS_RELR && TOOLS_SUPPORT_RELR
 	default y
 	help
@@ -1032,6 +1032,9 @@ config RELR
 	  format. Requires a compatible linker (LLD supports this feature), as
 	  well as compatible NM and OBJCOPY utilities (llvm-nm and llvm-objcopy
 	  are compatible).
+
+config ARCH_USE_MEMREMAP_PROT
+	bool
 
 source "kernel/gcov/Kconfig"
 
