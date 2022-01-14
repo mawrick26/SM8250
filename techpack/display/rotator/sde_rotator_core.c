@@ -2881,7 +2881,7 @@ static int sde_rotator_get_dt_vreg_data(struct device *dev,
 	struct device_node *of_node = NULL;
 	int dt_vreg_total = 0;
 	int i;
-	int rc;
+	int rc = 0;
 
 	if (!dev || !mp) {
 		SDEROT_ERR("%s: invalid input\n", __func__);
@@ -3242,8 +3242,6 @@ int sde_rotator_core_init(struct sde_rot_mgr **pmgr,
 		SDEROT_ERR("hw init failed %d\n", ret);
 		goto error_hw_init;
 	}
-
-	sde_rotator_pm_qos_add(mdata);
 
 	ret = sde_rotator_init_queue(mgr);
 	if (ret) {
