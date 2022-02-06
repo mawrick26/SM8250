@@ -11,6 +11,7 @@
 #include "sde_connector.h"
 #include "dsi_drm.h"
 #include "sde_trace.h"
+#include "sde_encoder.h"
 #include "sde_dbg.h"
 
 #define to_dsi_bridge(x)     container_of((x), struct dsi_bridge, base)
@@ -148,7 +149,6 @@ void dsi_convert_to_drm_mode(const struct dsi_display_mode *dsi_mode,
 
 static int dsi_bridge_attach(struct drm_bridge *bridge)
 {
-	struct dsi_bridge *c_bridge = to_dsi_bridge(bridge);
 
 	if (!bridge) {
 		DSI_ERR("Invalid params\n");
@@ -341,6 +341,8 @@ static bool dsi_bridge_mode_fixup(struct drm_bridge *bridge,
 	struct dsi_display *display;
 	struct dsi_display_mode dsi_mode, cur_dsi_mode, *panel_dsi_mode;
 	struct drm_crtc_state *crtc_state;
+	bool clone_mode = false;
+	struct drm_encoder *encoder;
 
 	crtc_state = container_of(mode, struct drm_crtc_state, mode);
 
@@ -403,6 +405,14 @@ static bool dsi_bridge_mode_fixup(struct drm_bridge *bridge,
 			DSI_ERR("[%s] seamless mode mismatch failure rc=%d\n",
 				c_bridge->display->name, rc);
 			return false;
+		}
+
+		drm_for_each_encoder(encoder, crtc_state->crtc->dev) {
+			if (encoder->crtc != crtc_state->crtc)
+				continue;
+
+			if (sde_encoder_in_clone_mode(encoder))
+				clone_mode = true;
 		}
 
 		/* No panel mode switch when drm pipeline is changing */
