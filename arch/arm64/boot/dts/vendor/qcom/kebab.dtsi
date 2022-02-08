@@ -307,12 +307,13 @@
 	op,nor-skin-thermal-warm-current-ma = <800>;
 	op,nor-skin-thermal-medium-current-ma = <1000>;
 	op,enable-nor-current-dynamic-adjust;
+
+	op,enable-temp-ctrl-center;
 };
 
 &kona_mtp_batterydata {
 	#include "OP-fg-batterydata-4500mah.dtsi"
 };
-
 
 &usb2_phy0 {
 	qcom,param-override-seq =

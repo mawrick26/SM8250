@@ -125,7 +125,6 @@
 	};
 };
 
-/* @bsp, Battery & Charging config STRAT */
 &qupv3_se16_i2c {
 	oneplus_fastchg@26{
 		op,4510mAh_4p45_support;
@@ -158,17 +157,6 @@
 	vbatdet-pre-normal-mv = <4335>;
 	vbatdet-normal-mv = <4335>;
 	vbatdet-warm-mv = <4030>;
-	/* temp region settings */
-	cold-bat-decidegc = <20>;
-	little-cold-bat-decidegc = <0>;
-	cool-bat-decidegc = <50>;
-	little-cool-bat-decidegc = <120>;
-	pre-normal-bat-decidegc = <160>;
-	warm-bat-decidegc = <450>;
-	hot-bat-decidegc = <500>;
-	qcom,otg-cl-ua = <1500000>;
-	op,sw-iterm-ma = <310>;
-	op,sw-check-full-enable;
 	/* temp region settings */
 	cold-bat-decidegc = <20>;
 	little-cold-bat-decidegc = <0>;

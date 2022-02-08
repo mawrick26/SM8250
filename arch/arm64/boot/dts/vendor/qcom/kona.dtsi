@@ -350,7 +350,7 @@
 	};
 
 	chosen {
-		bootargs = "rcupdate.rcu_expedited=1 rcu_nocbs=0-7";
+		bootargs = "noirqdebug nodebugmon rcupdate.rcu_expedited=1 rcu_nocbs=0-7 kpti=off cgroup_disable=pressure";
 	};
 
 	firmware: firmware {
@@ -368,7 +368,7 @@
 					dev = "/dev/block/platform/soc/1d84000.ufshc/by-name/vendor";
 					type = "ext4";
 					mnt_flags = "ro,barrier=1,discard";
-					fsmgr_flags = "wait,slotselect,avb";
+					fsmgr_flags = "wait,slotselect";
 					status = "ok";
 				};
 			};
@@ -511,11 +511,6 @@
 		cont_splash_memory: cont_splash_region@9c000000 {
 			reg = <0x0 0x9c000000 0x0 0x02300000>;
 			label = "cont_splash_region";
-		};
-
-		disp_rdump_memory: disp_rdump_region@9c000000 {
-			reg = <0x0 0x9c000000 0x0 0x00800000>;
-			label = "disp_rdump_region";
 		};
 
 		dfps_data_memory: dfps_data_region@9e300000 {
@@ -2453,6 +2448,7 @@
 		#clock-cells = <1>;
 		mboxes = <&qmp_aop 0>;
 		mbox-names = "qdss_clk";
+		qcom,clk-stop-bimc-log;
 	};
 
 	clock_gcc: qcom,gcc@100000 {
@@ -2792,6 +2788,7 @@
 		sw-reset = <&gpu_gx_sw_reset>;
 		parent-supply = <&VDD_GFX_LEVEL>;
 		vdd_parent-supply = <&VDD_GFX_LEVEL>;
+		qcom,skip-disable-before-sw-enable;
 		qcom,reset-aon-logic;
 		qcom,retain-regs;
 	};
@@ -4516,6 +4513,21 @@
 			qcom,dump-size = <0x1000>;
 			qcom,dump-id = <0x104>;
 		};
+
+		osm_reg {
+			qcom,dump-size = <0x400>;
+			qcom,dump-id = <0x163>;
+		};
+
+		pcu_reg {
+			qcom,dump-size = <0x400>;
+			qcom,dump-id = <0x164>;
+		};
+
+		fsm_data {
+			qcom,dump-size = <0x400>;
+			qcom,dump-id = <0x165>;
+		};
 	};
 
 	qcom_tzlog: tz-log@146bf720 {
@@ -4705,6 +4717,8 @@
 		      <0xb2e5510 0x5c0>;
 		reg-names = "smmu_iova_ipa", "tcs_cmd";
 		wlan-en-gpio = <&tlmm 20 0>;
+		qcom,bt-en-gpio = <&tlmm 21 0>;
+		qcom,sw-ctrl-gpio = <&tlmm 124 0>;
 		pinctrl-names = "wlan_en_active", "wlan_en_sleep";
 		pinctrl-0 = <&cnss_wlan_en_active>;
 		pinctrl-1 = <&cnss_wlan_en_sleep>;
@@ -4845,6 +4859,15 @@
 				mhi,priority = <1>;
 				mhi,brstmode = <2>;
 			};
+
+			mhi_event@2 {
+				mhi,num-elements = <32>;
+				mhi,intmod = <1>;
+				mhi,msi = <0>;
+				mhi,priority = <2>;
+				mhi,brstmode = <2>;
+				mhi,data-type = <3>;
+			};
 		};
 
 		mhi_devices {
@@ -4942,19 +4965,24 @@
 
 	qfprom: qfprom@780000 {
 		compatible = "qcom,qfprom";
-		reg = <0x00784000 0x3000>;
+		reg = <0x00780000 0x5000>;
 		#address-cells = <1>;
 		#size-cells = <1>;
 		read-only;
 		ranges;
 
-		gpu_lm_efuse: gpu_lm_efuse@5c8 {
-			reg = <0x5c8 0x4>;
+		gpu_lm_efuse: gpu_lm_efuse@45c8 {
+			reg = <0x45c8 0x4>;
 		};
 
-		gpu_speed_bin: gpu_speed_bin@19b {
-			reg = <0x19b 0x1>;
+		gpu_speed_bin: gpu_speed_bin@419b {
+			reg = <0x419b 0x1>;
 			bits = <5 3>;
+		};
+
+		thermal_speed_bin: thermal-speed-bin@1a2 {
+			reg = <0x1a2 0x1>;
+			bits = <7 1>;
 		};
 	};
 };
