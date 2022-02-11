@@ -10,7 +10,6 @@
 #include <linux/types.h>
 #include <linux/rwsem.h>
 
-#include <mm/slab.h>
 #include <media/v4l2-fh.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-event.h>
@@ -640,23 +639,6 @@ void cam_register_subdev_fops(struct v4l2_file_operations *fops)
 	*fops = v4l2_subdev_fops;
 }
 EXPORT_SYMBOL(cam_register_subdev_fops);
-
-void cam_subdev_notify_message(u32 subdev_type,
-	enum cam_subdev_message_type_t message_type,
-	uint32_t data)
-{
-	struct v4l2_subdev *sd = NULL;
-	struct cam_subdev *csd = NULL;
-
-	list_for_each_entry(sd, &g_dev.v4l2_dev->subdevs, list) {
-		if (sd->entity.function == subdev_type) {
-			csd = container_of(sd, struct cam_subdev, sd);
-			if (csd->msg_cb != NULL)
-				csd->msg_cb(sd, message_type, data);
-		}
-	}
-}
-EXPORT_SYMBOL(cam_subdev_notify_message);
 
 bool cam_req_mgr_is_open(void)
 {
