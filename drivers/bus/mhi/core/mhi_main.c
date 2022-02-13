@@ -113,8 +113,7 @@ static void mhi_reg_write_enqueue(struct mhi_controller *mhi_cntrl,
 
 	q_index = q_index & (REG_WRITE_QUEUE_LEN - 1);
 
-	MHI_ASSERT(mhi_cntrl->reg_write_q[q_index].valid, "queue full idx %d",
-			q_index);
+	MHI_ASSERT(mhi_cntrl->reg_write_q[q_index].valid, "queue full");
 
 	mhi_cntrl->reg_write_q[q_index].reg_addr = reg_addr;
 	mhi_cntrl->reg_write_q[q_index].val = val;
@@ -808,6 +807,7 @@ void mhi_create_devices(struct mhi_controller *mhi_cntrl)
 	struct mhi_device *mhi_dev;
 	int ret;
 
+	MHI_ERR(":%s\n", __func__);
 	mhi_chan = mhi_cntrl->mhi_chan;
 	for (i = 0; i < mhi_cntrl->max_chan; i++, mhi_chan++) {
 		if (!mhi_chan->configured || mhi_chan->mhi_dev ||
@@ -1421,8 +1421,7 @@ int mhi_process_tsync_ev_ring(struct mhi_controller *mhi_cntrl,
 	mutex_lock(&mhi_cntrl->tsync_mutex);
 
 	if (unlikely(mhi_tsync->int_sequence != sequence)) {
-		MHI_ASSERT(1, "Unexpected response:0x%llx Expected:0x%llx\n",
-			   sequence, mhi_tsync->int_sequence);
+		MHI_ASSERT(1, "Unexpected response");
 
 		mhi_device_put(mhi_cntrl->mhi_dev,
 			       MHI_VOTE_DEVICE | MHI_VOTE_BUS);
@@ -2151,7 +2150,7 @@ int mhi_debugfs_mhi_regdump_show(struct seq_file *m, void *d)
 	enum mhi_dev_state state;
 	enum mhi_ee ee;
 	int i, ret;
-	u32 val;
+	u32 val = 0;
 	void __iomem *mhi_base = mhi_cntrl->regs;
 	void __iomem *bhi_base = mhi_cntrl->bhi;
 	void __iomem *bhie_base = mhi_cntrl->bhie;
@@ -2804,7 +2803,7 @@ void mhi_debug_reg_dump(struct mhi_controller *mhi_cntrl)
 	enum mhi_dev_state state;
 	enum mhi_ee ee;
 	int i, ret;
-	u32 val;
+	u32 val = 0;
 	void __iomem *mhi_base = mhi_cntrl->regs;
 	void __iomem *bhi_base = mhi_cntrl->bhi;
 	void __iomem *bhie_base = mhi_cntrl->bhie;
