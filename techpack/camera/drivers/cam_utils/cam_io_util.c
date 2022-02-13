@@ -16,7 +16,7 @@ int cam_io_w(uint32_t data, void __iomem *addr)
 		return -EINVAL;
 
 	CAM_DBG(CAM_UTIL, "0x%pK %08x", addr, data);
-	writel_relaxed_no_log(data, addr);
+	writel_relaxed(data, addr);
 
 	return 0;
 }
@@ -29,7 +29,7 @@ int cam_io_w_mb(uint32_t data, void __iomem *addr)
 	CAM_DBG(CAM_UTIL, "0x%pK %08x", addr, data);
 	/* Ensure previous writes are done */
 	wmb();
-	writel_relaxed_no_log(data, addr);
+	writel_relaxed(data, addr);
 	/* Ensure previous writes are done */
 	wmb();
 
@@ -265,8 +265,8 @@ int cam_io_dump(void __iomem *base_addr, uint32_t start_offset, int size)
 			p_str += 11;
 		}
 		data = readl_relaxed(base_addr + REG_OFFSET(start_offset, i));
-		snprintf(p_str, 10, "%08x  ", data);
-		p_str += 9;
+		snprintf(p_str, 9, "%08x ", data);
+		p_str += 8;
 		if ((i + 1) % NUM_REGISTER_PER_LINE == 0) {
 			CAM_ERR(CAM_UTIL, "%s", line_str);
 			line_str[0] = '\0';
