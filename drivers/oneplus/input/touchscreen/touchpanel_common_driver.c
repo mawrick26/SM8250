@@ -37,26 +37,9 @@
 /*******Part0:LOG TAG Declear************************/
 #define TPD_PRINT_POINT_NUM 150
 #define TPD_DEVICE "touchpanel"
-#define TPD_INFO(a, arg...)  pr_err("[TP]"TPD_DEVICE ": " a, ##arg)
-#define TPD_DEBUG(a, arg...)\
-	do{\
-		if (LEVEL_DEBUG == tp_debug)\
-		pr_err("[TP]"TPD_DEVICE ": " a, ##arg);\
-	}while(0)
-
-#define TPD_DETAIL(a, arg...)\
-	do{\
-		if (LEVEL_BASIC != tp_debug)\
-		pr_err("[TP]"TPD_DEVICE ": " a, ##arg);\
-	}while(0)
-
-#define TPD_SPECIFIC_PRINT(count, a, arg...)\
-	do{\
-		if (count++ == TPD_PRINT_POINT_NUM || LEVEL_DEBUG == tp_debug) {\
-			TPD_INFO(TPD_DEVICE ": " a, ##arg);\
-			count = 0;\
-		}\
-	}while(0)
+#define TPD_INFO(a, arg...)  pr_debug("[TP]"TPD_DEVICE ": " a, ##arg)
+#define TPD_DEBUG(a, arg...) pr_debug("[TP]"TPD_DEVICE ": " a, ##arg)
+#define TPD_DETAIL(a, arg...) pr_debug("[TP]"TPD_DEVICE ": " a, ##arg)
 
 /*******Part1:Global variables Area********************/
 unsigned int tp_debug = 0;
@@ -245,7 +228,6 @@ void operate_mode_switch(struct touchpanel_data *ts)
 static void tp_touch_down(struct touchpanel_data *ts, struct point_info points, int touch_report_num, int id)
 {
 	static int last_width_major;
-	static int point_num = 0;
 
 	if (ts->input_dev == NULL)
 		return;
@@ -277,15 +259,11 @@ static void tp_touch_down(struct touchpanel_data *ts, struct point_info points, 
 					(points.y > ts->touch_major_limit.height_range) && (points.y < ts->resolution_info.max_y - ts->touch_major_limit.height_range)) {
 				input_report_abs(ts->input_dev, ABS_MT_TOUCH_MAJOR, points.touch_major);
 			}
-			if(!CHK_BIT(ts->irq_slot, (1<<id))) {
+			if(!CHK_BIT(ts->irq_slot, (1<<id)))
 				TPD_DETAIL("first touch point id %d [%4d %4d %4d]\n", id, points.x, points.y, points.z);
-				TPD_INFO("first touch point id %d [%4d %4d %4d]\n", id, points.x, points.y, points.z);
-			}
 		}
 	input_report_abs(ts->input_dev, ABS_MT_POSITION_X, points.x);
 	input_report_abs(ts->input_dev, ABS_MT_POSITION_Y, points.y);
-
-	TPD_SPECIFIC_PRINT(point_num, "Touchpanel id %d :Down[%4d %4d %4d]\n", id, points.x, points.y, points.z);
 
 #ifndef TYPE_B_PROTOCOL
 	input_mt_sync(ts->input_dev);
@@ -670,15 +648,10 @@ static void tp_touch_handle(struct touchpanel_data *ts)
 			}
 #ifdef TYPE_B_PROTOCOL
 			else {
-				if (pre_points[i].status != 0) {
-					TPD_INFO("last touch point id %d [%4d %4d %4d]\n", i, pre_points[i].x, pre_points[i].y, pre_points[i].z);
-				}
 				input_mt_slot(ts->input_dev, i);
 				input_mt_report_slot_state(ts->input_dev, MT_TOOL_FINGER, 0);
-				CLR_BIT(ts->irq_slot, (1<<i));
 			}
 #endif
-			memcpy(&pre_points[i], &points[i], sizeof(struct point_info));
 		}
 
 		if(ts->corner_delay_up > -1) {
@@ -718,8 +691,6 @@ static void tp_touch_handle(struct touchpanel_data *ts)
 	}
 	input_sync(ts->input_dev);
 	ts->touch_count = finger_num;
-	kfree(points);
-
 	mutex_unlock(&ts->report_mutex);
 }
 
@@ -4925,7 +4896,6 @@ void sec_ts_pinctrl_configure(struct hw_resource *hw_res, bool enable)
  * entrance of common touch Driver
  * Returning zero(sucess) or negative errno(failed)
  */
- 
 static int get_lcd_name(const char *str)
 {
 	TPD_INFO("enter %s, cld_name is %s\n", __func__, str);
@@ -4939,11 +4909,9 @@ static int get_lcd_name(const char *str)
 	} else if (!strcmp(str, "qcom,mdss_dsi_s6e3fc3_samsung_amoled_cmd")) { //using 20813 TP
 		lcd_id = 3;
 	}
-
 	TPD_INFO("lcd_id is %d\n", lcd_id);
 	return 0;
 }
-
 
 static int check_dt(struct device_node *np)
 {
@@ -5169,6 +5137,7 @@ int register_common_touch_device(struct touchpanel_data *pdata)
 			TPD_INFO("Unable to register fb_notifier: %d\n", ret);
 		}
 	}
+
 	ts->reverse_charge_notif.notifier_call = reverse_charge_notifier_callback;
 	#ifndef CONFIG_TOUCHPANEL_GOODIX_GT9886
 	ret = register_reverse_charge_notifier(&ts->reverse_charge_notif);/*commented to make compilation successful for Android_R */
