@@ -4330,7 +4330,6 @@ static int syna_tp_delta_print(struct syna_tcm_data *tcm_info)
 	retval = syna_tcm_collect_reports(tcm_info, REPORT_DELTA, 1);
 	if (retval < 0) {
 		TPD_DEBUG("Failed to read delta data\n");
-		kfree(Pstr);
 		return retval;
 	}
 
@@ -4352,7 +4351,7 @@ static int syna_tp_delta_print(struct syna_tcm_data *tcm_info)
 	if (retval < 0) {
 		TPD_DEBUG("Failed to switch to normal\n");
 	}
-	kfree(Pstr);
+
 	return retval;
 }
 
