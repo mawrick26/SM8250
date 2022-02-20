@@ -14,7 +14,7 @@
 #include "touch_interfaces.h"
 
 #define TPD_DEVICE "touch_interface"
-#define TPD_INFO(a, arg...)  pr_err("[TP]"TPD_DEVICE ": " a, ##arg)
+#define TPD_INFO(a, arg...)  pr_debug("[TP]"TPD_DEVICE ": " a, ##arg)
 
 static struct touch_dma_buf *dma_buffer;
 
@@ -156,7 +156,6 @@ int touch_i2c_write_block(struct i2c_client* client, u16 addr, unsigned short le
         dev_err(&client->dev, "%s: I2C write over retry limit\n", __func__);
         retval = -EIO;
     }
-    kfree(buffer);
     return retval;
 }
 
