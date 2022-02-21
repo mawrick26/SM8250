@@ -67,7 +67,6 @@
 #include "wlan_scan_utils_api.h"
 #include "wlan_p2p_cfg_api.h"
 #include "cfg_nan_api.h"
-#include "nan_ucfg_api.h"
 
 #include <ol_defines.h>
 
@@ -1548,12 +1547,11 @@ QDF_STATUS csr_update_channel_list(struct mac_context *mac)
 				}
 			}
 
-			if (!ucfg_is_nan_allowed_on_freq(mac->pdev,
-				pChanList->chanParam[num_channel].freq))
-				pChanList->chanParam[num_channel].nan_disabled =
-					true;
 
-			if (CHANNEL_STATE_ENABLE != channel_state)
+			if (CHANNEL_STATE_ENABLE == channel_state)
+				pChanList->chanParam[num_channel].dfsSet =
+					false;
+			else
 				pChanList->chanParam[num_channel].dfsSet =
 					true;
 
@@ -4572,8 +4570,8 @@ QDF_STATUS csr_roam_prepare_bss_config(struct mac_context *mac,
 	if (((pBssConfig->uCfgDot11Mode == eCSR_CFG_DOT11_MODE_11N)
 	    || (pBssConfig->uCfgDot11Mode == eCSR_CFG_DOT11_MODE_11AC))
 		&& ((pBssConfig->qosType != eCSR_MEDIUM_ACCESS_WMM_eDCF_DSCP)
-		    || (pBssConfig->qosType != eCSR_MEDIUM_ACCESS_11e_HCF)
-		    || (pBssConfig->qosType != eCSR_MEDIUM_ACCESS_11e_eDCF))) {
+		    && (pBssConfig->qosType != eCSR_MEDIUM_ACCESS_11e_HCF)
+		    && (pBssConfig->qosType != eCSR_MEDIUM_ACCESS_11e_eDCF))) {
 		/* Joining BSS is 11n capable and WMM is disabled on AP. */
 		/* Assume all HT AP's are QOS AP's and enable WMM */
 		pBssConfig->qosType = eCSR_MEDIUM_ACCESS_WMM_eDCF_DSCP;
@@ -7459,7 +7457,9 @@ static void csr_roam_process_start_bss_success(struct mac_context *mac_ctx,
 	tDot11fBeaconIEs *ies_ptr = NULL;
 	tSirMacAddr bcast_mac = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
 	QDF_STATUS status;
+#ifdef FEATURE_WLAN_DIAG_SUPPORT_CSR
 	host_log_ibss_pkt_type *ibss_log;
+#endif
 #ifdef FEATURE_WLAN_MCC_TO_SCC_SWITCH
 	struct ht_profile *src_profile = NULL;
 	tCsrRoamHTProfile *dst_profile = NULL;
@@ -7563,8 +7563,8 @@ static void csr_roam_process_start_bss_success(struct mac_context *mac_ctx,
 			ibss_log->beaconInterval = (uint8_t) bi;
 		WLAN_HOST_DIAG_LOG_REPORT(ibss_log);
 	}
-#endif
 	ibss_log = NULL;
+#endif
 	/*
 	 * Only set context for non-WDS_STA. We don't even need it for
 	 * WDS_AP. But since the encryption.
@@ -8266,7 +8266,9 @@ static bool csr_roam_process_results(struct mac_context *mac_ctx, tSmeCmd *cmd,
 	struct csr_roam_profile *profile = &cmd->u.roamCmd.roamProfile;
 	eRoamCmdStatus roam_status;
 	eCsrRoamResult roam_result;
+#ifdef FEATURE_WLAN_DIAG_SUPPORT_CSR
 	host_log_ibss_pkt_type *ibss_log;
+#endif
 	struct start_bss_rsp  *start_bss_rsp = NULL;
 
 	if (!session) {
@@ -8295,8 +8297,8 @@ static bool csr_roam_process_results(struct mac_context *mac_ctx, tSmeCmd *cmd,
 			ibss_log->status = WLAN_IBSS_STATUS_FAILURE;
 			WLAN_HOST_DIAG_LOG_REPORT(ibss_log);
 		}
-#endif
 		ibss_log = NULL;
+#endif
 		start_bss_rsp = (struct start_bss_rsp *)context;
 		roam_status = eCSR_ROAM_IBSS_IND;
 		roam_result = eCSR_ROAM_RESULT_IBSS_STARTED;
@@ -13598,16 +13600,20 @@ static QDF_STATUS csr_roam_start_wait_for_key_timer(
 {
 	QDF_STATUS status;
 	uint8_t session_id = mac->roam.WaitForKeyTimerInfo.vdev_id;
+#ifdef WLAN_DEBUG
 	tpCsrNeighborRoamControlInfo pNeighborRoamInfo =
 		&mac->roam.neighborRoamInfo[session_id];
+#endif
 
 	if (csr_neighbor_roam_is_handoff_in_progress(mac, session_id)) {
 		/* Disable heartbeat timer when hand-off is in progress */
+#ifdef WLAN_DEBUG
 		sme_debug("disabling HB timer in state: %s sub-state: %s",
 			mac_trace_get_neighbour_roam_state(
 				pNeighborRoamInfo->neighborRoamState),
 			mac_trace_getcsr_roam_sub_state(
 				mac->roam.curSubState[session_id]));
+#endif
 		mac->mlme_cfg->timeouts.heart_beat_threshold = 0;
 	}
 	sme_debug("csrScanStartWaitForKeyTimer");

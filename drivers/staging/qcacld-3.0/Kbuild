@@ -2226,7 +2226,9 @@ OBJS +=		$(TDLS_OBJS)
 OBJS +=		$(PMO_OBJS)
 OBJS +=		$(P2P_OBJS)
 OBJS +=		$(POLICY_MGR_OBJS)
-OBJS +=		$(WLAN_LOGGING_OBJS)
+ifeq ($(BUILD_DEBUG_VERSION), 1)
+OBJS +=		$(WLAN_LOGGING_OBJS) $(FWLOG_OBJS)
+endif
 OBJS +=		$(NLINK_OBJS)
 OBJS +=		$(PTT_OBJS)
 OBJS +=		$(UMAC_SER_OBJS)
@@ -2300,7 +2302,6 @@ ccflags-y += $(INCS)
 
 cppflags-y +=	-DANI_OS_TYPE_ANDROID=6 \
 		-Wall\
-		-Werror\
 		-D__linux__
 
 cppflags-$(CONFIG_PTT_SOCK_SVC_ENABLE) += -DPTT_SOCK_SVC_ENABLE
