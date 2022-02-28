@@ -383,7 +383,7 @@ static void mmc_setup_queue(struct mmc_queue *mq, struct mmc_card *card)
 	if (host->ops->init)
 		host->ops->init(host);
 
-	if (mmc_card_mmc(card)) {
+	if (mmc_card_mmc(card) && card->ext_csd.data_sector_size) {
 		block_size = card->ext_csd.data_sector_size;
 		WARN_ON(block_size != 512 && block_size != 4096);
 	}
