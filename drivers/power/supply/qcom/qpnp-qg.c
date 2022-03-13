@@ -36,8 +36,11 @@
 #include "qg-soc.h"
 #include "qg-battery-profile.h"
 #include "qg-defs.h"
+#include <linux/proc_fs.h>
 
 static int qg_debug_mask;
+
+static struct external_battery_gauge *external_fg;
 
 static int qg_esr_mod_count = 30;
 static ssize_t esr_mod_count_show(struct device *dev, struct device_attribute
@@ -59,6 +62,24 @@ static ssize_t esr_mod_count_store(struct device *dev,
 	return count;
 }
 static DEVICE_ATTR_RW(esr_mod_count);
+
+void external_battery_gauge_register(
+				struct external_battery_gauge *batt_gauge)
+{
+	if (external_fg) {
+		external_fg = batt_gauge;
+		pr_err("multiple battery gauge called\n");
+	} else
+		external_fg = batt_gauge;
+}
+EXPORT_SYMBOL(external_battery_gauge_register);
+
+void external_battery_gauge_unregister(
+				struct external_battery_gauge *batt_gauge)
+{
+	external_fg = NULL;
+}
+EXPORT_SYMBOL(external_battery_gauge_unregister);
 
 static int qg_esr_count = 3;
 static ssize_t esr_count_show(struct device *dev, struct device_attribute
@@ -124,10 +145,6 @@ static bool is_battery_present(struct qpnp_qg *chip)
 #define DEBUG_BATT_ID_HIGH	8500
 static bool is_debug_batt_id(struct qpnp_qg *chip)
 {
-	if (is_between(DEBUG_BATT_ID_LOW, DEBUG_BATT_ID_HIGH,
-					chip->batt_id_ohm))
-		return true;
-
 	return false;
 }
 
@@ -1801,6 +1818,9 @@ static int qg_get_charge_counter(struct qpnp_qg *chip, int *charge_counter)
 	int rc, cc_soc = 0;
 	int64_t temp = 0;
 
+	if (chip == NULL) {
+		return 0;
+	}
 	if (is_debug_batt_id(chip) || chip->battery_missing) {
 		*charge_counter = -EINVAL;
 		return 0;
@@ -4738,7 +4758,7 @@ static int qpnp_qg_probe(struct platform_device *pdev)
 	chip->batt_age_level = -EINVAL;
 	chip->qg_charge_counter = -EINVAL;
 
-	chip->qg_version = (u8)of_device_get_match_data(&pdev->dev);
+	chip->qg_version = (u8)(uintptr_t)of_device_get_match_data(&pdev->dev);
 
 	switch (chip->qg_version) {
 	case QG_LITE:
